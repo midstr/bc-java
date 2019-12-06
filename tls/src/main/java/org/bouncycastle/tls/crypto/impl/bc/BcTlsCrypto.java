@@ -2,6 +2,7 @@ package org.bouncycastle.tls.crypto.impl.bc;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 
 import org.bouncycastle.asn1.x509.KeyUsage;
@@ -15,21 +16,9 @@ import org.bouncycastle.crypto.StreamCipher;
 import org.bouncycastle.crypto.agreement.srp.SRP6Client;
 import org.bouncycastle.crypto.agreement.srp.SRP6Server;
 import org.bouncycastle.crypto.agreement.srp.SRP6VerifierGenerator;
-import org.bouncycastle.crypto.digests.MD5Digest;
-import org.bouncycastle.crypto.digests.NullDigest;
-import org.bouncycastle.crypto.digests.SHA1Digest;
-import org.bouncycastle.crypto.digests.SHA224Digest;
-import org.bouncycastle.crypto.digests.SHA256Digest;
-import org.bouncycastle.crypto.digests.SHA384Digest;
-import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.crypto.digests.*;
 import org.bouncycastle.crypto.encodings.PKCS1Encoding;
-import org.bouncycastle.crypto.engines.AESEngine;
-import org.bouncycastle.crypto.engines.ARIAEngine;
-import org.bouncycastle.crypto.engines.CamelliaEngine;
-import org.bouncycastle.crypto.engines.DESedeEngine;
-import org.bouncycastle.crypto.engines.RC4Engine;
-import org.bouncycastle.crypto.engines.RSABlindedEngine;
-import org.bouncycastle.crypto.engines.SEEDEngine;
+import org.bouncycastle.crypto.engines.*;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.modes.AEADBlockCipher;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
@@ -139,6 +128,9 @@ public class BcTlsCrypto
         case EncryptionAlgorithm.AES_256_GCM:
             // NOTE: Ignores macAlgorithm
             return createCipher_AES_GCM(cryptoParams, 32, 16);
+        case EncryptionAlgorithm.SMS4_GCM:
+                // NOTE: Ignores macAlgorithm
+                return createCipher_SM4_GCM(cryptoParams, 16, 16);
         case EncryptionAlgorithm.ARIA_128_CBC:
             return createARIACipher(cryptoParams, 16, macAlgorithm);
         case EncryptionAlgorithm.ARIA_128_GCM:
@@ -313,6 +305,7 @@ public class BcTlsCrypto
         case SignatureAlgorithm.rsa_pss_pss_sha256:
         case SignatureAlgorithm.rsa_pss_pss_sha384:
         case SignatureAlgorithm.rsa_pss_pss_sha512:
+        case SignatureAlgorithm.sm2:
             return true;
         default:
             return false;
@@ -371,6 +364,8 @@ public class BcTlsCrypto
             return new SHA384Digest();
         case HashAlgorithm.sha512:
             return new SHA512Digest();
+       case HashAlgorithm.sm3:
+                return new SM3Digest();
         default:
             throw new IllegalArgumentException("invalid HashAlgorithm: " + HashAlgorithm.getText(hashAlgorithm));
         }
@@ -432,6 +427,8 @@ public class BcTlsCrypto
             return new SHA384Digest((SHA384Digest)hash);
         case HashAlgorithm.sha512:
             return new SHA512Digest((SHA512Digest)hash);
+            case HashAlgorithm.sm3:
+                return new SM3Digest((SM3Digest)hash);
         default:
             throw new IllegalArgumentException("invalid HashAlgorithm: " + HashAlgorithm.getText(hashAlgorithm));
         }
@@ -481,6 +478,14 @@ public class BcTlsCrypto
             new AeadOperator(createAEADBlockCipher_AES_GCM(), false), cipherKeySize, macSize, TlsAEADCipher.AEAD_GCM);
     }
 
+    private TlsAEADCipher createCipher_SM4_GCM(TlsCryptoParameters cryptoParams, int cipherKeySize, int macSize)
+            throws IOException
+    {
+        return new TlsAEADCipher(cryptoParams, new AeadOperator(createAEADBlockCipher_SM4_GCM(), true),
+                new AeadOperator(createAEADBlockCipher_SM4_GCM(), false), cipherKeySize, macSize,
+                TlsAEADCipher.AEAD_GCM);
+    }
+
     protected TlsAEADCipher createCipher_ARIA_GCM(TlsCryptoParameters cryptoParams, int cipherKeySize, int macSize)
         throws IOException
     {
@@ -524,6 +529,11 @@ public class BcTlsCrypto
         return new AESEngine();
     }
 
+    protected BlockCipher createSM4Engine()
+    {
+        return new SM4Engine();
+    }
+
     protected BlockCipher createARIAEngine()
     {
         return new ARIAEngine();
@@ -553,6 +563,12 @@ public class BcTlsCrypto
     {
         // TODO Consider allowing custom configuration of multiplier
         return new GCMBlockCipher(createAESEngine());
+    }
+
+    protected AEADBlockCipher createAEADBlockCipher_SM4_GCM()
+    {
+        // TODO Consider allowing custom configuration of multiplier
+        return new GCMBlockCipher(createSM4Engine());
     }
 
     protected AEADBlockCipher createAEADBlockCipher_ARIA_GCM()
@@ -612,6 +628,8 @@ public class BcTlsCrypto
             return new BcSSL3HMAC(createDigest(HashAlgorithm.sha384));
         case MACAlgorithm.hmac_sha512:
             return new BcSSL3HMAC(createDigest(HashAlgorithm.sha512));
+        case MACAlgorithm.hmac_sm3:
+            return new BcSSL3HMAC(createDigest(HashAlgorithm.sm3));
         default:
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }

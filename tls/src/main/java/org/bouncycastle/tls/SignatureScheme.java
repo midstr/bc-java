@@ -28,6 +28,8 @@ public class SignatureScheme
     public static final int rsa_pss_pss_sha384 = 0x080A;
     public static final int rsa_pss_pss_sha512 = 0x080B;
 
+    public static final int sm3 = 0x0901;
+
     /*
      * RFC 8446 reserved for private use (0xFE00..0xFFFF)
      */
@@ -68,6 +70,8 @@ public class SignatureScheme
             return "rsa_pss_pss_sha384";
         case rsa_pss_pss_sha512:
             return "rsa_pss_pss_sha512";
+            case sm3:
+                return "sm3";
         default:
             return "UNKNOWN";
         }

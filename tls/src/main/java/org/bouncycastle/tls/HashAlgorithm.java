@@ -12,6 +12,7 @@ public class HashAlgorithm
     public static final short sha256 = 4;
     public static final short sha384 = 5;
     public static final short sha512 = 6;
+    public static final short sm3 = 7;
 
     /*
      * RFC 8422
@@ -38,6 +39,8 @@ public class HashAlgorithm
             return "sha512";
         case Intrinsic:
             return "Intrinsic";
+        case sm3:
+                return "sm3";
         default:
             return "UNKNOWN";
         }
@@ -59,6 +62,8 @@ public class HashAlgorithm
             return 48;
         case sha512:
             return 64;
+        case sm3:
+            return 48;
         default:
             return -1;
         }
@@ -85,6 +90,7 @@ public class HashAlgorithm
         case sha384:
         case sha512:
         case Intrinsic:
+        case sm3:
             return true;
         default:
             return false;

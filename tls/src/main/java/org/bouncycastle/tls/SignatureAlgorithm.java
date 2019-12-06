@@ -26,6 +26,8 @@ public class SignatureAlgorithm
     public static final short rsa_pss_pss_sha384 = 10;
     public static final short rsa_pss_pss_sha512 = 11;
 
+    public static final short sm2 = 12;
+
     public static String getName(short signatureAlgorithm)
     {
         switch (signatureAlgorithm)
@@ -54,6 +56,8 @@ public class SignatureAlgorithm
             return "rsa_pss_pss_sha384";
         case rsa_pss_pss_sha512:
             return "rsa_pss_pss_sha512";
+        case sm2:
+            return "sm2";
         default:
             return "UNKNOWN";
         }
@@ -94,6 +98,7 @@ public class SignatureAlgorithm
         case rsa_pss_pss_sha256:
         case rsa_pss_pss_sha384:
         case rsa_pss_pss_sha512:
+        case sm2:
             return true;
         default:
             return false;

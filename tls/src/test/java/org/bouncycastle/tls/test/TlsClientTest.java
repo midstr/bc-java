@@ -59,7 +59,7 @@ public class TlsClientTest
 
     static TlsClientProtocol openTlsConnection(InetAddress address, int port, TlsClient client) throws IOException
     {
-        Socket s = new Socket(address, port);
+        Socket s = new Socket("9.77.84.156", 10008);
         TlsClientProtocol protocol = new TlsClientProtocol(s.getInputStream(), s.getOutputStream());
         protocol.connect(client);
         return protocol;

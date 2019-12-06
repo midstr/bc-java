@@ -115,6 +115,8 @@ abstract class JsseUtils
             return "DSA";
         case SignatureAlgorithm.ecdsa:
             return "EC";
+            case SignatureAlgorithm.sm2:
+                return "SM2";
         // TODO[RFC 8422]
 //        case SignatureAlgorithm.ed25519:
 //            return "Ed25519";
@@ -145,6 +147,8 @@ abstract class JsseUtils
             return "EC";
         case ClientCertificateType.rsa_sign:
             return "RSA";
+            case ClientCertificateType.sm2_sign:
+                return "SM2";
         default:
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
@@ -180,6 +184,8 @@ abstract class JsseUtils
             return "SRP_DSS";
         case KeyExchangeAlgorithm.SRP_RSA:
             return "SRP_RSA";
+            case KeyExchangeAlgorithm.ECDHE_SM2:
+                return "ECDHE_SM2";
         default:
             throw new TlsFatalAlert(AlertDescription.internal_error);
         }
@@ -225,6 +231,8 @@ abstract class JsseUtils
             return "SHA384";
         case HashAlgorithm.sha512:
             return "SHA512";
+            case HashAlgorithm.sm3:
+                return "SM3";
         default:
             return null;
         }
@@ -271,6 +279,8 @@ abstract class JsseUtils
             return "ECDSA";
         case SignatureAlgorithm.rsa:
             return "RSA";
+            case SignatureAlgorithm.sm2:
+                return "SM2";
         default:
             return null;
         }
@@ -310,6 +320,8 @@ abstract class JsseUtils
         case SignatureScheme.rsa_pss_rsae_sha384:
         case SignatureScheme.rsa_pss_rsae_sha512:
             return "RSASSA-PSS";
+            case SignatureScheme.sm3:
+                return "SM3withSM2";
         default:
             break;
         }
@@ -426,8 +438,8 @@ abstract class JsseUtils
 //            SignatureAndHashAlgorithm.rsa_pss_pss_sha256, SignatureAndHashAlgorithm.rsa_pss_pss_sha384,
 //            SignatureAndHashAlgorithm.rsa_pss_pss_sha512 };
         short[] hashAlgorithms = new short[]{ HashAlgorithm.sha1, HashAlgorithm.sha224, HashAlgorithm.sha256,
-            HashAlgorithm.sha384, HashAlgorithm.sha512 };
-        short[] signatureAlgorithms = new short[]{ SignatureAlgorithm.rsa, SignatureAlgorithm.ecdsa };
+            HashAlgorithm.sha384, HashAlgorithm.sha512 , HashAlgorithm.sm3};
+        short[] signatureAlgorithms = new short[]{ SignatureAlgorithm.rsa, SignatureAlgorithm.ecdsa , SignatureAlgorithm.sm2};
 
         Vector result = new Vector();
 //        for (int i = 0; i < intrinsicSigAlgs.length; ++i)
@@ -471,7 +483,8 @@ abstract class JsseUtils
         case KeyExchangeAlgorithm.RSA_PSK:
         case KeyExchangeAlgorithm.SRP_RSA:
             return privateKey instanceof RSAPrivateKey || "RSA".equals(algorithm);
-
+            case KeyExchangeAlgorithm.ECDHE_SM2:
+                return privateKey instanceof PrivateKey || "SM2".equals(algorithm);
         default:
             return false;
         }

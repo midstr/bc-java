@@ -1942,6 +1942,10 @@ public abstract class TlsProtocol
             return PRFAlgorithm.tls_prf_legacy;
         }
 
+        case CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3:{
+            return PRFAlgorithm.tls_prf_sm3;
+        }
+
         default:
         {
             if (isTLSv13)

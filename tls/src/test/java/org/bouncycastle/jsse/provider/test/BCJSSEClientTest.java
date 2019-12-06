@@ -65,14 +65,14 @@ public class BCJSSEClientTest
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2", BouncyCastleJsseProvider.PROVIDER_NAME);
         sslContext.init(null, new TrustManager[]{ tm }, new SecureRandom());
 
-        String host = "localhost";
-        int port = 8443;
+        String host = "9.77.84.156";
+        int port = 10008;
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
         SSLSocket sslSocket = (SSLSocket)sslSocketFactory.createSocket(host, port);
 
         OutputStream output = sslSocket.getOutputStream();
-        writeUTF8Line(output, "GET / HTTP/1.1");
+        writeUTF8Line(output, "GET /test HTTP/1.1");
         writeUTF8Line(output, "Host: " + host + ":" + port);
         writeUTF8Line(output, "");
         output.flush();

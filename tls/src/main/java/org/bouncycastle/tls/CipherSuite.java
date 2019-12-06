@@ -444,4 +444,10 @@ public class CipherSuite
     public static final int TLS_CHACHA20_POLY1305_SHA256 = 0x1303;
     public static final int TLS_AES_128_CCM_SHA256 = 0x1304;
     public static final int TLS_AES_128_CCM_8_SHA256 = 0x1305;
+
+
+    public static final int TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3 = 0xE107;
+//    public static final int TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3 = 0xE108;
+//    public static final int TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3 = 0xE011;
+//    public static final int TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3 = 0xE013;
 }

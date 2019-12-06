@@ -113,6 +113,9 @@ class CipherSuiteInfo
         case EncryptionAlgorithm.AES_256_GCM:
             decomposition.add("AES_256_GCM");
             break;
+        case EncryptionAlgorithm.SMS4_GCM:
+                decomposition.add("SMS4_GCM");
+                break;
         case EncryptionAlgorithm.CHACHA20_POLY1305:
             // NOTE: Following SunJSSE, nothing beyond the transformation added above (i.e "ChaCha20-Poly1305")
             break;
@@ -135,6 +138,9 @@ class CipherSuiteInfo
             break;
         case HashAlgorithm.sha384:
             addAll(decomposition, "SHA384", "SHA-384", "HmacSHA384");
+            break;
+        case HashAlgorithm.sm3:
+            addAll(decomposition, "SM3");
             break;
 //        case HashAlgorithm.sha512:
 //            addAll(decomposition, "SHA512", "SHA-512", "HmacSHA512");
@@ -159,6 +165,9 @@ class CipherSuiteInfo
             break;
         case KeyExchangeAlgorithm.ECDHE_RSA:
             addAll(decomposition, "ECDHE", "RSA", "ECDHE_RSA");
+            break;
+        case KeyExchangeAlgorithm.ECDHE_SM2:
+            addAll(decomposition, "ECDHE", "SM2", "ECDHE_SM2");
             break;
         case KeyExchangeAlgorithm.NULL:
             // NOTE: TLS 1.3 cipher suites
@@ -193,6 +202,9 @@ class CipherSuiteInfo
         case MACAlgorithm.hmac_sha384:
             addAll(decomposition, "SHA384", "SHA-384", "HmacSHA384");
             break;
+        case MACAlgorithm.hmac_sm3:
+                addAll(decomposition, "SM3", "HmacSM3");
+                break;
 //        case MACAlgorithm.hmac_sha512:
 //            addAll(decomposition, "SHA512", "SHA-512", "HmacSHA512");
 //            break;
@@ -274,6 +286,9 @@ class CipherSuiteInfo
         case CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384:
             return HashAlgorithm.sha384;
 
+        case CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3:
+                return HashAlgorithm.sm3;
+
         default:
             throw new IllegalArgumentException();
         }
@@ -296,6 +311,8 @@ class CipherSuiteInfo
         case EncryptionAlgorithm.AES_128_GCM:
         case EncryptionAlgorithm.AES_256_GCM:
             return "AES/GCM/NoPadding";
+        case EncryptionAlgorithm.SMS4_GCM:
+            return "SM4/GCM/NoPadding";
         case EncryptionAlgorithm.CHACHA20_POLY1305:
             return "ChaCha20-Poly1305";
         case EncryptionAlgorithm.NULL:

@@ -20,6 +20,7 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.bsi.BSIObjectIdentifiers;
 import org.bouncycastle.asn1.eac.EACObjectIdentifiers;
 import org.bouncycastle.asn1.edec.EdECObjectIdentifiers;
+import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -103,6 +104,8 @@ public class TlsUtils
 
         addCertSigAlgOID(h, EdECObjectIdentifiers.id_Ed25519, HashAlgorithm.Intrinsic, SignatureAlgorithm.ed25519);
         addCertSigAlgOID(h, EdECObjectIdentifiers.id_Ed448, HashAlgorithm.Intrinsic, SignatureAlgorithm.ed448);
+
+        addCertSigAlgOID(h, GMObjectIdentifiers.sm2encrypt_with_sm3, HashAlgorithm.sm3, SignatureAlgorithm.sm2);
 
         return h;
     }
@@ -2169,7 +2172,8 @@ public class TlsUtils
         case CipherSuite.TLS_DHE_RSA_WITH_SEED_CBC_SHA:
         case CipherSuite.TLS_RSA_WITH_SEED_CBC_SHA:
             return EncryptionAlgorithm.SEED_CBC;
-
+        case CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3:
+            return EncryptionAlgorithm.SMS4_GCM;
         default:
             return -1;
         }
@@ -2546,6 +2550,8 @@ public class TlsUtils
         case CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA:
         case CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA:
             return KeyExchangeAlgorithm.SRP_RSA;
+        case CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3:
+            return KeyExchangeAlgorithm.ECDHE_SM2;
 
         default:
             return -1;
@@ -2866,7 +2872,8 @@ public class TlsUtils
         case CipherSuite.TLS_RSA_PSK_WITH_NULL_SHA384:
         case CipherSuite.TLS_RSA_WITH_ARIA_256_CBC_SHA384:
             return MACAlgorithm.hmac_sha384;
-
+            case CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3:
+                return MACAlgorithm.hmac_sm3;
         default:
             return -1;
         }
@@ -3061,6 +3068,7 @@ public class TlsUtils
         case CipherSuite.TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256:
         case CipherSuite.TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384:
         case CipherSuite.TLS_RSA_WITH_NULL_SHA256:
+        case CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3:
             return ProtocolVersion.TLSv12;
 
         default:
@@ -3096,6 +3104,7 @@ public class TlsUtils
             case KeyExchangeAlgorithm.ECDH_RSA:
             case KeyExchangeAlgorithm.ECDHE_PSK:
             case KeyExchangeAlgorithm.ECDHE_RSA:
+            case KeyExchangeAlgorithm.ECDHE_SM2:
             {
                 addToSet(result, NamedGroupRole.ecdh);
                 break;
@@ -3153,7 +3162,8 @@ public class TlsUtils
             return sigAlgs.contains(Shorts.valueOf(SignatureAlgorithm.ecdsa))
                 || sigAlgs.contains(Shorts.valueOf(SignatureAlgorithm.ed25519))
                 || sigAlgs.contains(Shorts.valueOf(SignatureAlgorithm.ed448));
-
+        case KeyExchangeAlgorithm.ECDHE_SM2:
+            return sigAlgs.contains(Shorts.valueOf(SignatureAlgorithm.sm2));
         case KeyExchangeAlgorithm.DH_anon:
         case KeyExchangeAlgorithm.ECDH_anon:
         case KeyExchangeAlgorithm.NULL:
@@ -3214,6 +3224,9 @@ public class TlsUtils
         case ClientCertificateType.dss_sign:
             return SignatureAlgorithm.dsa == signatureAlgorithm;
 
+        case ClientCertificateType.sm2_sign:
+            return SignatureAlgorithm.sm2 == signatureAlgorithm;
+
         case ClientCertificateType.ecdsa_sign:
             switch (signatureAlgorithm)
             {
@@ -3256,6 +3269,9 @@ public class TlsUtils
         case KeyExchangeAlgorithm.DHE_DSS:
         case KeyExchangeAlgorithm.SRP_DSS:
             return SignatureAlgorithm.dsa == signatureAlgorithm;
+
+            case KeyExchangeAlgorithm.ECDHE_SM2:
+                return SignatureAlgorithm.sm2 == signatureAlgorithm;
 
         case KeyExchangeAlgorithm.ECDHE_ECDSA:
             switch (signatureAlgorithm)
@@ -3450,6 +3466,8 @@ public class TlsUtils
         case KeyExchangeAlgorithm.ECDHE_RSA:
             return crypto.hasECDHAgreement()
                 && hasAnyRSASigAlgs(crypto);
+            case KeyExchangeAlgorithm.ECDHE_SM2:
+                return  crypto.hasECDHAgreement() && crypto.hasSignatureAlgorithm(SignatureAlgorithm.sm2);
 
         case KeyExchangeAlgorithm.NULL:
         case KeyExchangeAlgorithm.PSK:
@@ -3527,7 +3545,8 @@ public class TlsUtils
 
         case KeyExchangeAlgorithm.ECDHE_ECDSA:
         case KeyExchangeAlgorithm.ECDHE_RSA:
-            return factory.createECDHEKeyExchangeClient(keyExchange);
+            case KeyExchangeAlgorithm.ECDHE_SM2:
+                return factory.createECDHEKeyExchangeClient(keyExchange);
 
         case KeyExchangeAlgorithm.RSA:
             return factory.createRSAKeyExchange(keyExchange);
@@ -3583,6 +3602,7 @@ public class TlsUtils
 
         case KeyExchangeAlgorithm.ECDHE_ECDSA:
         case KeyExchangeAlgorithm.ECDHE_RSA:
+            case KeyExchangeAlgorithm.ECDHE_SM2:
             return factory.createECDHEKeyExchangeServer(keyExchange, server.getECDHConfig());
 
         case KeyExchangeAlgorithm.RSA:

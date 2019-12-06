@@ -98,6 +98,7 @@ class ProvSSLContextSpi
         cs.add("TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA");
         cs.add("TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256");
         cs.add("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384");
+        cs.add("TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3");
         cs.add("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256");
         cs.add("TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
         cs.add("TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256");
@@ -181,6 +182,7 @@ class ProvSSLContextSpi
         addCipherSuite(cs, "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA);
         addCipherSuite(cs, "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384", CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384);
         addCipherSuite(cs, "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384);
+        //addCipherSuite(cs, "TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3", CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3);
         addCipherSuite(cs, "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256", CipherSuite.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256);
         addCipherSuite(cs, "TLS_ECDHE_RSA_WITH_NULL_SHA", CipherSuite.TLS_ECDHE_RSA_WITH_NULL_SHA);
 
@@ -197,6 +199,8 @@ class ProvSSLContextSpi
         addCipherSuite(cs, "TLS_RSA_WITH_AES_256_GCM_SHA384", CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384);
         addCipherSuite(cs, "TLS_RSA_WITH_NULL_SHA", CipherSuite.TLS_RSA_WITH_NULL_SHA);
         addCipherSuite(cs, "TLS_RSA_WITH_NULL_SHA256", CipherSuite.TLS_RSA_WITH_NULL_SHA256);
+
+        addCipherSuite(cs, "TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3", CipherSuite.TLS_ECDHE_SM2_WITH_SMS4_GCM_SM3);
 
         return Collections.unmodifiableMap(cs);
     }

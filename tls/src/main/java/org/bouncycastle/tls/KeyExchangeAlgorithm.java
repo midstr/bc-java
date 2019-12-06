@@ -53,4 +53,7 @@ public class KeyExchangeAlgorithm
      * RFC 5489
      */
     public static final int ECDHE_PSK = 24;
+
+
+    public static final int ECDHE_SM2 = 25;
 }
